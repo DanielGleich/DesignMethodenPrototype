@@ -18,10 +18,10 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 0.68
+    value: 1.52
   threshold:
     overrideState: 1
-    value: 1
+    value: 0.78
   softKnee:
     overrideState: 0
     value: 0.5
@@ -217,7 +217,7 @@ MonoBehaviour:
     defaultState: 1
   tonemapper:
     overrideState: 1
-    value: 2
+    value: 1
   toneCurveToeStrength:
     overrideState: 0
     value: 0
@@ -244,8 +244,8 @@ MonoBehaviour:
     overrideState: 0
     value: 1
   temperature:
-    overrideState: 0
-    value: 0
+    overrideState: 1
+    value: -100
   tint:
     overrideState: 0
     value: 0
@@ -263,7 +263,7 @@ MonoBehaviour:
     value: 0
   postExposure:
     overrideState: 1
-    value: 4.71
+    value: 8
   contrast:
     overrideState: 0
     value: 0
@@ -296,7 +296,7 @@ MonoBehaviour:
     value: 100
   lift:
     overrideState: 0
-    value: {x: 1, y: 1, z: 1, w: 0}
+    value: {x: 0, y: 0.30839205, z: 1, w: 0}
   gamma:
     overrideState: 0
     value: {x: 1, y: 1, z: 1, w: 0}

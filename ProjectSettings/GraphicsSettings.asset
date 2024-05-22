@@ -65,4 +65,4 @@ GraphicsSettings:
     UnityEngine.Rendering.Universal.UniversalRenderPipeline: {fileID: 11400000, guid: 49534b0510b247b4baa996b9ca3a06ac, type: 2}
   m_LightProbeOutsideHullStrategy: 0
   m_CameraRelativeLightCulling: 0
-  m_CameraRelativeShadowCulling: 1
+  m_CameraRelativeShadowCulling: 0

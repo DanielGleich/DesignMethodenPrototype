@@ -11,16 +11,20 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform player;
     [SerializeField] Transform playerObj;
     [SerializeField] Rigidbody rb;
-    //[SerializeField] CinemachineFreeLook camera;
     Camera camera;
 
 
-    [Header("Parameters")]
-    [SerializeField] private float moveSpeed;
+    [Header("Move-Parameter")]
+    [SerializeField] private float moveAcceleration;
+    [SerializeField] private float maxSpeed;
     [SerializeField] private float rotationSpeed;
     [SerializeField] private float turnSmoothTime = 0.1f;
+    private Vector3 vel;
     private float turnSmoothVelocity;
-    // Start is called before the first frame update
+    [Header("Jump-Parameter")]
+    [SerializeField] bool isGrounded = true;
+    [SerializeField] float jumpHeight;
+    [SerializeField] float airMovMultiplier;
 
     Vector3 moveDirection;
     void Start()
@@ -33,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Debug.Log(rb.velocity);
         // Vorne Hinten ; Vertical
         int axisZ = 0, axisX = 0;
         if (Input.GetKey("w"))
@@ -46,6 +51,14 @@ public class PlayerMovement : MonoBehaviour
         else if (Input.GetKey("d"))
             axisX = 1;
 
+        if (Input.GetKeyDown(KeyCode.Space)) { 
+            if (isGrounded)
+            {
+                rb.AddForce(rb.transform.up * jumpHeight, ForceMode.Impulse);
+                isGrounded = false;
+            }
+        }
+
         moveDirection = new Vector3(axisX, 0, axisZ).normalized;
 
         Vector3 viewDir = player.position - new Vector3(camera.transform.position.x, player.position.y, camera.transform.position.z);
@@ -58,29 +71,36 @@ public class PlayerMovement : MonoBehaviour
         }
 
         Vector3 direction = Camera.main.transform.position - player.position;
-        direction.y = 0; // Ignoriere die vertikale Komponente
+        direction.y = 0;
 
         Quaternion targetRotation = Quaternion.LookRotation(direction);
 
-        //Interpoliere zwischen der aktuellen Rotation des Spielers und der Zielrotation
         playerObj.rotation = Quaternion.Slerp(player.rotation, targetRotation, Time.deltaTime * rotationSpeed);
-
         moveDirection = Quaternion.AngleAxis(camera.transform.eulerAngles.y, Vector3.up) * moveDirection;
-        Debug.Log(moveDirection);
-        rb.AddForce(moveDirection * moveSpeed * Time.deltaTime, ForceMode.Force);
 
-        SpeedControl();
+        Vector3 mov = moveDirection * moveAcceleration * Time.deltaTime;
+        if (!isGrounded) mov = mov * airMovMultiplier;
+        rb.AddForce(mov, ForceMode.Force);
+
+        // Beschleunigung runterdämpfen, wenn keine Tasten gedrückt
+        if (!Input.GetKey("w") && !Input.GetKey("s"))
+        {
+            rb.velocity = Vector3.SmoothDamp(rb.velocity, new Vector3(rb.velocity.x, rb.velocity.y, 0), ref vel, .2f);
+        }
+
+        if (!Input.GetKey("a") && !Input.GetKey("d"))
+        {
+            rb.velocity = Vector3.SmoothDamp(rb.velocity, new Vector3(0, rb.velocity.y, rb.velocity.z), ref vel, .2f);
+        }
+
+        if (rb.velocity.magnitude > maxSpeed)
+        {
+            rb.velocity = rb.velocity.normalized * maxSpeed;
+        }
     }
 
-    private void SpeedControl()
+    public void SetGrounded(bool grounded)
     {
-        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-
-        // limit velocity if needed
-        if (flatVel.magnitude > moveSpeed)
-        {
-            Vector3 limitedVel = flatVel.normalized * moveSpeed;
-            rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
-        }
+        isGrounded = grounded;
     }
 }

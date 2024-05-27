@@ -33,8 +33,18 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float reflectCooldown;
 
     Vector3 moveDirection;
+
+    IEnumerator LoadCheckState() {
+        yield return null;
+        CheckPoint cp = GameObject.FindGameObjectWithTag("CheckpointManager").GetComponent<CheckpointManager>().currentState;
+        transform.position = cp.PlayerSpawnPoint.position;
+
+        transform.eulerAngles = cp.PlayerSpawnPoint.eulerAngles;
+    }
+
     void Start()
     {
+        StartCoroutine(LoadCheckState());
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         camera = Camera.main;
@@ -44,8 +54,6 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         GetInput();
-
-        Debug.DrawRay(playerObj.transform.position, -playerObj.transform.forward, Color.magenta);
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -66,12 +74,13 @@ public class PlayerMovement : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(direction);
 
+        //playerObj.rotation = Quaternion.Slerp(player.rotation, targetRotation, Time.deltaTime * rotationSpeed);
         playerObj.rotation = Quaternion.Slerp(player.rotation, targetRotation, Time.deltaTime * rotationSpeed);
         moveDirection = Quaternion.AngleAxis(camera.transform.eulerAngles.y, Vector3.up) * moveDirection;
 
         Vector3 mov = moveDirection * moveAcceleration * Time.deltaTime;
         if (!isGrounded) mov = mov * airMovMultiplier;
-        rb.AddForce(mov, ForceMode.Force);
+        rb.AddForce(mov, ForceMode.VelocityChange);
 
         // Beschleunigung runterdämpfen, wenn keine Tasten gedrückt
         if (!Input.GetKey("w") && !Input.GetKey("s"))

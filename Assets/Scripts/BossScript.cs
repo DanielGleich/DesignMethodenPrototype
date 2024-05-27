@@ -19,16 +19,25 @@ public class BossScript : MonoBehaviour
     [SerializeField] List<Material> damageMaterials;
     GameObject player;
 
+    void LoadCheckState()
+    {
+        CheckPoint cp = GameObject.FindGameObjectWithTag("CheckpointManager").GetComponent<CheckpointManager>().currentState;
+        gameObject.transform.position = cp.BossSpawnPoint.position;
+        gameObject.transform.eulerAngles = cp.BossSpawnPoint.eulerAngles;
+        hp = cp.hpCount;
+        GetComponent<MeshRenderer>().material = damageMaterials[hp];
+    }
+
     private void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
     }
 
-    void Start()
+    private void Start()
     {
+        LoadCheckState();
     }
 
-    
     void Update()
     {
         if (canShoot)
@@ -40,6 +49,7 @@ public class BossScript : MonoBehaviour
     public void TakeDamage()
     {
         hp--;
+        CheckpointState.bossHp = hp;
         if (hp == 0) Destroy(gameObject); else { 
             GetComponent<MeshRenderer>().material = damageMaterials[hp];
         }

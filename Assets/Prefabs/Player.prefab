@@ -254,7 +254,7 @@ MonoBehaviour:
   playerObj: {fileID: 5292215206070830595}
   rb: {fileID: 7999160206558630031}
   reflector: {fileID: 7157010345990712613}
-  moveAcceleration: 1500
+  moveAcceleration: 200
   maxSpeed: 10
   rotationSpeed: 1000
   turnSmoothTime: 0.1
@@ -384,7 +384,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4042249589993321312}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: bd82fbd22510e0544a7657b8c7611f90, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

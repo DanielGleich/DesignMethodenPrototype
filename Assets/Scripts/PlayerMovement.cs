@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform player;
     [SerializeField] Transform playerObj;
     [SerializeField] Rigidbody rb;
+    [SerializeField] GameObject reflector;
     Camera camera;
 
 
@@ -25,6 +26,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] bool isGrounded = true;
     [SerializeField] float jumpHeight;
     [SerializeField] float airMovMultiplier;
+    
+    [Header("Reflect-Parameter")]
+    [SerializeField] bool isReflecting = false;
+    [SerializeField] float reflectDuration;
+    [SerializeField] float reflectCooldown;
 
     Vector3 moveDirection;
     void Start()
@@ -37,34 +43,19 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(rb.velocity);
-        // Vorne Hinten ; Vertical
-        int axisZ = 0, axisX = 0;
-        if (Input.GetKey("w"))
-            axisZ = 1;
-        else if (Input.GetKey("s"))
-            axisZ = -1;
+        GetInput();
 
-        // Links Rechts ; Horizontal
-        if (Input.GetKey("a"))
-            axisX = -1;
-        else if (Input.GetKey("d"))
-            axisX = 1;
+        Debug.DrawRay(playerObj.transform.position, -playerObj.transform.forward, Color.magenta);
 
-        if (Input.GetKeyDown(KeyCode.Space)) { 
-            if (isGrounded)
-            {
-                rb.AddForce(rb.transform.up * jumpHeight, ForceMode.Impulse);
-                isGrounded = false;
-            }
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (!isReflecting) StartCoroutine(Reflect());
         }
-
-        moveDirection = new Vector3(axisX, 0, axisZ).normalized;
 
         Vector3 viewDir = player.position - new Vector3(camera.transform.position.x, player.position.y, camera.transform.position.z);
         orientation.forward = viewDir.normalized;
 
-        Vector3 inputDir = orientation.forward * axisZ + orientation.right * axisX;
+        Vector3 inputDir = orientation.forward * moveDirection.z + orientation.right * moveDirection.x;
         if (inputDir != Vector3.zero)
         {
             playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotationSpeed);
@@ -99,8 +90,43 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void GetInput() {
+        // Vorne Hinten ; Vertical
+        int axisZ = 0, axisX = 0;
+        if (Input.GetKey("w"))
+            axisZ = 1;
+        else if (Input.GetKey("s"))
+            axisZ = -1;
+
+        // Links Rechts ; Horizontal
+        if (Input.GetKey("a"))
+            axisX = -1;
+        else if (Input.GetKey("d"))
+            axisX = 1;
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (isGrounded)
+            {
+                rb.AddForce(rb.transform.up * jumpHeight, ForceMode.Impulse);
+                isGrounded = false;
+            }
+        }
+
+        moveDirection = new Vector3(axisX, 0, axisZ).normalized;
+    }
+
     public void SetGrounded(bool grounded)
     {
         isGrounded = grounded;
+    }
+
+    IEnumerator Reflect() { 
+        isReflecting = true;
+        reflector.SetActive(true);
+        yield return new WaitForSeconds(reflectDuration);
+        reflector.SetActive(false);
+        yield return new WaitForSeconds(reflectCooldown);
+        isReflecting = false;
     }
 }

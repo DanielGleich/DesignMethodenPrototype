@@ -10,11 +10,13 @@ public class BossScript : MonoBehaviour
 
     [Header("Angriffparameter")]
     [SerializeField] GameObject bulletPrefab;
-    [SerializeField] float bulletForce;
     [SerializeField] bool canShoot = true;
     [SerializeField] float shootCooldown;
     [SerializeField] float shootDelay;
 
+
+    [Header("Sonstiges")]
+    [SerializeField] List<Material> damageMaterials;
     GameObject player;
 
     private void Awake()
@@ -38,16 +40,18 @@ public class BossScript : MonoBehaviour
     public void TakeDamage()
     {
         hp--;
+        if (hp == 0) Destroy(gameObject); else { 
+            GetComponent<MeshRenderer>().material = damageMaterials[hp];
+        }
     }
 
     IEnumerator ShootBullet()
     {
-        Debug.Log("Shoot");
         canShoot = false;
         Vector3 pos = gameObject.transform.position;
         Quaternion rot = Quaternion.identity;
         GameObject bullet = Instantiate(bulletPrefab, pos, rot);
-        bullet.transform.LookAt(player.transform.position + new Vector3(0, 1, 0));
+        bullet.transform.LookAt(player.transform.position);
         yield return new WaitForSeconds(shootDelay);
         bullet.GetComponent<ProjectileScript>().Shoot();
         yield return new WaitForSeconds(shootCooldown);

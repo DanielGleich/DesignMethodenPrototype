@@ -52,6 +52,7 @@ public class ProjectileScript : MonoBehaviour
             Reflect();
         } else
         {
+            if (other.gameObject.layer == LayerMask.NameToLayer("Player")) other.gameObject.transform.parent.gameObject.GetComponent<PlayerMovement>().TakeDamage();
             if (other.gameObject.layer == LayerMask.NameToLayer("Boss")) other.gameObject.GetComponent<BossScript>().TakeDamage();
             Destroy(gameObject);
         }

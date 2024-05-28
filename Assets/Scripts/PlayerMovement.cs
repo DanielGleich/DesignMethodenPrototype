@@ -7,127 +7,118 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] Transform orientation;
-    [SerializeField] Transform player;
+    [SerializeField] Transform cam;
     [SerializeField] Transform playerObj;
-    [SerializeField] Rigidbody rb;
     [SerializeField] GameObject reflector;
-    Camera camera;
+    CharacterController cc;
 
+    [Header("Health")]
+    [SerializeField] int hp = 3;
+    [SerializeField] List<Material> hpMaterials;
+
+    [Header("Gravity")]
+    [SerializeField] float velocity;
 
     [Header("Move-Parameter")]
-    [SerializeField] private float moveAcceleration;
-    [SerializeField] private float maxSpeed;
-    [SerializeField] private float rotationSpeed;
+    [SerializeField] private float moveSpeed;
     [SerializeField] private float turnSmoothTime = 0.1f;
-    private Vector3 vel;
-    private float turnSmoothVelocity;
+
     [Header("Jump-Parameter")]
-    [SerializeField] bool isGrounded = true;
     [SerializeField] float jumpHeight;
-    [SerializeField] float airMovMultiplier;
+    [SerializeField] float jumpCooldown;
+    [SerializeField] float gravityMultiplier;
+    bool isJumpCooldown = false;
     
     [Header("Reflect-Parameter")]
     [SerializeField] bool isReflecting = false;
     [SerializeField] float reflectDuration;
     [SerializeField] float reflectCooldown;
 
-    Vector3 moveDirection;
+    float inputX;
+    float inputZ;
+    Vector3 moveVector;
 
+    float targetAngle;
+
+    float turnSmoothVelocity;
+    float verticalVel;
     IEnumerator LoadCheckState() {
         yield return null;
         CheckPoint cp = GameObject.FindGameObjectWithTag("CheckpointManager").GetComponent<CheckpointManager>().currentState;
         transform.position = cp.PlayerSpawnPoint.position;
-
         transform.eulerAngles = cp.PlayerSpawnPoint.eulerAngles;
     }
 
     void Start()
     {
+        cc = GetComponent<CharacterController>();
         StartCoroutine(LoadCheckState());
+        cam = Camera.main.transform;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        camera = Camera.main;
     }
 
     // Update is called once per frame
     void Update()
     {
+        targetAngle = cam.eulerAngles.y;
         GetInput();
+        RotatePlayer();
+        MovePlayer();
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (!isReflecting) StartCoroutine(Reflect());
-        }
+        if (cc.isGrounded)
+            verticalVel -= 0;
+        else
+            verticalVel -= 1;
 
-        Vector3 viewDir = player.position - new Vector3(camera.transform.position.x, player.position.y, camera.transform.position.z);
-        orientation.forward = viewDir.normalized;
-
-        Vector3 inputDir = orientation.forward * moveDirection.z + orientation.right * moveDirection.x;
-        if (inputDir != Vector3.zero)
-        {
-            playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotationSpeed);
-        }
-
-        Vector3 direction = Camera.main.transform.position - player.position;
-        direction.y = 0;
-
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
-
-        //playerObj.rotation = Quaternion.Slerp(player.rotation, targetRotation, Time.deltaTime * rotationSpeed);
-        playerObj.rotation = Quaternion.Slerp(player.rotation, targetRotation, Time.deltaTime * rotationSpeed);
-        moveDirection = Quaternion.AngleAxis(camera.transform.eulerAngles.y, Vector3.up) * moveDirection;
-
-        Vector3 mov = moveDirection * moveAcceleration * Time.deltaTime;
-        if (!isGrounded) mov = mov * airMovMultiplier;
-        rb.AddForce(mov, ForceMode.VelocityChange);
-
-        // Beschleunigung runterdämpfen, wenn keine Tasten gedrückt
-        if (!Input.GetKey("w") && !Input.GetKey("s"))
-        {
-            rb.velocity = Vector3.SmoothDamp(rb.velocity, new Vector3(rb.velocity.x, rb.velocity.y, 0), ref vel, .2f);
-        }
-
-        if (!Input.GetKey("a") && !Input.GetKey("d"))
-        {
-            rb.velocity = Vector3.SmoothDamp(rb.velocity, new Vector3(0, rb.velocity.y, rb.velocity.z), ref vel, .2f);
-        }
-
-        if (rb.velocity.magnitude > maxSpeed)
-        {
-            rb.velocity = rb.velocity.normalized * maxSpeed;
-        }
+        moveVector = new Vector3(0, verticalVel * .2f * Time.deltaTime, 0);
+        cc.Move(moveVector);
     }
 
     void GetInput() {
-        // Vorne Hinten ; Vertical
-        int axisZ = 0, axisX = 0;
-        if (Input.GetKey("w"))
-            axisZ = 1;
-        else if (Input.GetKey("s"))
-            axisZ = -1;
+        inputX = Input.GetAxis("Horizontal");
+        inputZ = Input.GetAxis("Vertical");
 
-        // Links Rechts ; Horizontal
-        if (Input.GetKey("a"))
-            axisX = -1;
-        else if (Input.GetKey("d"))
-            axisX = 1;
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (isGrounded)
-            {
-                rb.AddForce(rb.transform.up * jumpHeight, ForceMode.Impulse);
-                isGrounded = false;
-            }
-        }
-
-        moveDirection = new Vector3(axisX, 0, axisZ).normalized;
+        if (Input.GetKeyDown(KeyCode.Space) && cc.isGrounded && !isJumpCooldown) StartCoroutine(Jump());
+        if (Input.GetMouseButtonDown(0) && !isReflecting) StartCoroutine(Reflect());
+    }
+    public void RotatePlayer()
+    {
+        float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+        transform.rotation = Quaternion.Euler(0f, angle, 0f);
     }
 
-    public void SetGrounded(bool grounded)
+    void MovePlayer()
     {
-        isGrounded = grounded;
+        inputX = Input.GetAxis("Horizontal");
+        inputZ = Input.GetAxis("Vertical");
+
+        var forward = cam.transform.forward;
+        var right = cam.transform.right;
+
+        forward.y = 0f;
+        right.y = 0f;
+
+        forward.Normalize();
+        right.Normalize();
+        Vector3 desiredMoveDirection = forward * inputZ + right * inputX;
+
+        cc.Move(desiredMoveDirection * Time.deltaTime * moveSpeed);
+    }
+
+    public void TakeDamage()
+    {
+        hp--;
+        if (hp == 0) gameObject.SetActive(false);
+        else playerObj.GetComponent<MeshRenderer>().material = hpMaterials[hp];
+    }
+
+    IEnumerator Jump()
+    {
+        isJumpCooldown = true;
+        cc.Move(transform.up * jumpHeight);
+        yield return new WaitForSeconds(jumpCooldown);
+        isJumpCooldown = false;
     }
 
     IEnumerator Reflect() { 
@@ -138,4 +129,5 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(reflectCooldown);
         isReflecting = false;
     }
+
 }

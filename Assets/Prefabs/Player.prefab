@@ -145,7 +145,7 @@ Transform:
   m_GameObject: {fileID: 1195217945499512575}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: -0.3}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0.3}
   m_LocalScale: {x: 0.5, y: 0.2, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -249,18 +249,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85af30466766feb45b6fb4b7d1d7a915, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  orientation: {fileID: 3079108481458683777}
-  player: {fileID: 8301171950977305876}
+  cam: {fileID: 0}
   playerObj: {fileID: 5292215206070830595}
-  rb: {fileID: 7999160206558630031}
   reflector: {fileID: 7157010345990712613}
-  moveAcceleration: 200
-  maxSpeed: 10
-  rotationSpeed: 1000
+  hp: 3
+  hpMaterials:
+  - {fileID: 0}
+  - {fileID: 2100000, guid: b460ebfb7f70ac0499094e54d7a44f20, type: 2}
+  - {fileID: 2100000, guid: 08c8bd641a57aa2499f9fc003b41f619, type: 2}
+  - {fileID: 2100000, guid: 5264770bb8431e94cbcaadb0ddeb3245, type: 2}
+  moveSpeed: 1000
+  maxMoveSpeed: 1000
   turnSmoothTime: 0.1
   isGrounded: 1
-  jumpHeight: 5
-  airMovMultiplier: 0.4
+  jumpHeight: 7
+  airMovMultiplier: 0.8
+  jumpCooldown: 1
+  gravityMultiplier: 0.5
   isReflecting: 0
   reflectDuration: 0.5
   reflectCooldown: 1
@@ -459,8 +464,8 @@ Transform:
   m_GameObject: {fileID: 7157010345990712613}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.008, y: -0.008, z: -0.73}
-  m_LocalScale: {x: 1.2714, y: 2.05, z: 0.097123}
+  m_LocalPosition: {x: 0, y: -0.008, z: 0.73}
+  m_LocalScale: {x: 1.2714, y: 2.05, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5292215206070830595}
@@ -534,5 +539,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 1, z: 2}
   m_Center: {x: 0, y: 0, z: 0}

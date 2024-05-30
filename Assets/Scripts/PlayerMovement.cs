@@ -17,7 +17,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] List<Material> hpMaterials;
 
     [Header("Gravity")]
-    [SerializeField] float velocity;
     [SerializeField] float gravity;
     [SerializeField] float groundedGravity;
 
@@ -31,7 +30,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float maxJumpHeight;
     [SerializeField] float maxJumpTime;
     [SerializeField] bool isJumping;
-
     
     [Header("Reflect-Parameter")]
     [SerializeField] bool isReflecting = false;
@@ -40,12 +38,10 @@ public class PlayerMovement : MonoBehaviour
 
     float inputX;
     float inputZ;
-    Vector3 moveVector;
-
+    Vector3 jumpVector;
     float targetAngle;
-
     float turnSmoothVelocity;
-    float verticalVel;
+
     IEnumerator LoadCheckState() {
         yield return null;
         CheckPoint cp = GameObject.FindGameObjectWithTag("CheckpointManager").GetComponent<CheckpointManager>().currentState;
@@ -60,32 +56,23 @@ public class PlayerMovement : MonoBehaviour
         cam = Camera.main.transform;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        setupJumpVariables();
+        SetupJumpVariables();
     }
 
     // Update is called once per frame
     void Update()
     {
-        isJumpPressed = Input.GetKey(KeyCode.Space);
         targetAngle = cam.eulerAngles.y;
         GetInput();
         RotatePlayer();
         MovePlayer();
-
-        if (cc.isGrounded)
-            verticalVel -= 0;
-        else
-            verticalVel -= 1;
-
-        moveVector = new Vector3(0, verticalVel * .2f * Time.deltaTime, 0);
-        cc.Move(moveVector);
-
-        handleGravity();
+        HandleGravity();
     }
 
     void GetInput() {
         inputX = Input.GetAxis("Horizontal");
         inputZ = Input.GetAxis("Vertical");
+        isJumpPressed = Input.GetKey(KeyCode.Space);
 
         if (Input.GetMouseButtonDown(0) && !isReflecting) StartCoroutine(Reflect());
     }
@@ -108,18 +95,32 @@ public class PlayerMovement : MonoBehaviour
 
         forward.Normalize();
         right.Normalize();
-        Vector3 desiredMoveDirection = forward * inputZ + right * inputX;
+        Vector3 desiredMoveDirection = forward * inputZ + right * inputX + jumpVector;
 
         cc.Move(desiredMoveDirection * Time.deltaTime * moveSpeed);
-        handleGravity();
         handleJump();
     }
 
-        void handleGravity() {
-        if (cc.isGrounded)
-            moveVector.y = groundedGravity;
+    void HandleGravity() {
+        bool isFalling = cc.velocity.y <= 0.0f;
+        float fallMultiplier = 2.0f;
+        if (cc.isGrounded) {
+            jumpVector.y = groundedGravity;
+        }
+        else if (isFalling)
+        {
+            float previousYVelocity = jumpVector.y;
+            float newYVelocity = jumpVector.y + (gravity * fallMultiplier * Time.deltaTime);
+            float nextYVelocity = (previousYVelocity + newYVelocity) * .5f;
+            jumpVector.y = nextYVelocity;
+        }
         else
-            moveVector.y = gravity;
+        {
+            float previousYVelocity = jumpVector.y;
+            float newYVelocity = jumpVector.y + (gravity * Time.deltaTime);
+            float nextYVelocity = (previousYVelocity + newYVelocity) * .5f;
+            jumpVector.y = nextYVelocity;
+        }
     }
 
 
@@ -130,17 +131,22 @@ public class PlayerMovement : MonoBehaviour
         else playerObj.GetComponent<MeshRenderer>().material = hpMaterials[hp];
     }
 
-    void setupJumpVariables() {
+    void SetupJumpVariables() {
         float timeToApex = maxJumpTime / 2;
         gravity = (-2 * maxJumpHeight) / Mathf.Pow(timeToApex, 2);
-        initialJumpVelocity = (2 * maxJumpHeight) / timeToApex;
+        //initialJumpVelocity = (2 * maxJumpHeight) / timeToApex;
     }
 
     void handleJump() {
-        Debug.Log(cc.isGrounded);
-        if (!isJumping && cc.isGrounded && isJumpPressed) {
+        if (!isJumping && cc.isGrounded && isJumpPressed)
+        {
             isJumping = true;
-            moveVector.y = initialJumpVelocity;
+            jumpVector.y = initialJumpVelocity;
+            cc.Move(jumpVector);
+
+        }
+        else if (!isJumpPressed && isJumping && cc.isGrounded) { 
+            isJumping= false;
         }
     }
 
@@ -151,6 +157,10 @@ public class PlayerMovement : MonoBehaviour
         reflector.SetActive(false);
         yield return new WaitForSeconds(reflectCooldown);
         isReflecting = false;
+    }
+
+    public void SetGrounded(bool val) {
+          //isGrounded = val;
     }
 
 }

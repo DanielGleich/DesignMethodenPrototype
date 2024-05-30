@@ -158,9 +158,4 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(reflectCooldown);
         isReflecting = false;
     }
-
-    public void SetGrounded(bool val) {
-          //isGrounded = val;
-    }
-
 }

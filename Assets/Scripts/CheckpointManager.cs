@@ -35,7 +35,7 @@ public class CheckpointManager : MonoBehaviour
         }
     }
 
-    void ReloadScene() { 
+    public void ReloadScene() { 
         GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>().StopAllCoroutines();
         GameObject.FindGameObjectWithTag("Boss").GetComponent<BossScript>().StopAllCoroutines();
         SceneManager.LoadScene(0);

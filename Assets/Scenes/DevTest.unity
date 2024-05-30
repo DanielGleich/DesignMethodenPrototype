@@ -599,6 +599,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2002471739}
     - target: {fileID: 4752235149219720095, guid: a8d94f2abd702c7478701a83fe044944, type: 3}
+      propertyPath: gravity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752235149219720095, guid: a8d94f2abd702c7478701a83fe044944, type: 3}
       propertyPath: Velocity
       value: 8
       objectReference: {fileID: 0}
@@ -619,6 +623,10 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4752235149219720095, guid: a8d94f2abd702c7478701a83fe044944, type: 3}
+      propertyPath: maxJumpTime
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752235149219720095, guid: a8d94f2abd702c7478701a83fe044944, type: 3}
       propertyPath: maxMoveSpeed
       value: 15
       objectReference: {fileID: 0}
@@ -627,12 +635,24 @@ PrefabInstance:
       value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 4752235149219720095, guid: a8d94f2abd702c7478701a83fe044944, type: 3}
+      propertyPath: maxJumpHeight
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752235149219720095, guid: a8d94f2abd702c7478701a83fe044944, type: 3}
       propertyPath: turnSmoothTime
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752235149219720095, guid: a8d94f2abd702c7478701a83fe044944, type: 3}
+      propertyPath: groundedGravity
       value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 4752235149219720095, guid: a8d94f2abd702c7478701a83fe044944, type: 3}
       propertyPath: accelerationTime
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752235149219720095, guid: a8d94f2abd702c7478701a83fe044944, type: 3}
+      propertyPath: initialJumpVelocity
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4752235149219720095, guid: a8d94f2abd702c7478701a83fe044944, type: 3}
       propertyPath: whatIsGround.m_Bits
@@ -1361,7 +1381,7 @@ CharacterController:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1616,11 +1636,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4389886108980047907, guid: 79318dc37d4ffc44c8bafe555f7ac512, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000017659854
+      value: 0.00000001765986
       objectReference: {fileID: 0}
     - target: {fileID: 4389886108980047907, guid: 79318dc37d4ffc44c8bafe555f7ac512, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0000000016409462
+      value: -0.0000000016409466
       objectReference: {fileID: 0}
     - target: {fileID: 5228655140833642616, guid: 79318dc37d4ffc44c8bafe555f7ac512, type: 3}
       propertyPath: m_LocalRotation.y

@@ -18,16 +18,20 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Gravity")]
     [SerializeField] float velocity;
+    [SerializeField] float gravity;
+    [SerializeField] float groundedGravity;
 
     [Header("Move-Parameter")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float turnSmoothTime = 0.1f;
 
     [Header("Jump-Parameter")]
-    [SerializeField] float jumpHeight;
-    [SerializeField] float jumpCooldown;
-    [SerializeField] float gravityMultiplier;
-    bool isJumpCooldown = false;
+    [SerializeField] bool isJumpPressed;
+    [SerializeField] float initialJumpVelocity;
+    [SerializeField] float maxJumpHeight;
+    [SerializeField] float maxJumpTime;
+    [SerializeField] bool isJumping;
+
     
     [Header("Reflect-Parameter")]
     [SerializeField] bool isReflecting = false;
@@ -56,11 +60,13 @@ public class PlayerMovement : MonoBehaviour
         cam = Camera.main.transform;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        setupJumpVariables();
     }
 
     // Update is called once per frame
     void Update()
     {
+        isJumpPressed = Input.GetKey(KeyCode.Space);
         targetAngle = cam.eulerAngles.y;
         GetInput();
         RotatePlayer();
@@ -73,13 +79,14 @@ public class PlayerMovement : MonoBehaviour
 
         moveVector = new Vector3(0, verticalVel * .2f * Time.deltaTime, 0);
         cc.Move(moveVector);
+
+        handleGravity();
     }
 
     void GetInput() {
         inputX = Input.GetAxis("Horizontal");
         inputZ = Input.GetAxis("Vertical");
 
-        if (Input.GetKeyDown(KeyCode.Space) && cc.isGrounded && !isJumpCooldown) StartCoroutine(Jump());
         if (Input.GetMouseButtonDown(0) && !isReflecting) StartCoroutine(Reflect());
     }
     public void RotatePlayer()
@@ -104,7 +111,17 @@ public class PlayerMovement : MonoBehaviour
         Vector3 desiredMoveDirection = forward * inputZ + right * inputX;
 
         cc.Move(desiredMoveDirection * Time.deltaTime * moveSpeed);
+        handleGravity();
+        handleJump();
     }
+
+        void handleGravity() {
+        if (cc.isGrounded)
+            moveVector.y = groundedGravity;
+        else
+            moveVector.y = gravity;
+    }
+
 
     public void TakeDamage()
     {
@@ -113,12 +130,18 @@ public class PlayerMovement : MonoBehaviour
         else playerObj.GetComponent<MeshRenderer>().material = hpMaterials[hp];
     }
 
-    IEnumerator Jump()
-    {
-        isJumpCooldown = true;
-        cc.Move(transform.up * jumpHeight);
-        yield return new WaitForSeconds(jumpCooldown);
-        isJumpCooldown = false;
+    void setupJumpVariables() {
+        float timeToApex = maxJumpTime / 2;
+        gravity = (-2 * maxJumpHeight) / Mathf.Pow(timeToApex, 2);
+        initialJumpVelocity = (2 * maxJumpHeight) / timeToApex;
+    }
+
+    void handleJump() {
+        Debug.Log(cc.isGrounded);
+        if (!isJumping && cc.isGrounded && isJumpPressed) {
+            isJumping = true;
+            moveVector.y = initialJumpVelocity;
+        }
     }
 
     IEnumerator Reflect() { 

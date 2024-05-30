@@ -139,14 +139,14 @@ MonoBehaviour:
   - {fileID: 2100000, guid: b460ebfb7f70ac0499094e54d7a44f20, type: 2}
   - {fileID: 2100000, guid: 08c8bd641a57aa2499f9fc003b41f619, type: 2}
   - {fileID: 2100000, guid: 5264770bb8431e94cbcaadb0ddeb3245, type: 2}
-  gravity: -9.8
+  gravity: -9
   groundedGravity: 0.05
   moveSpeed: 7
   turnSmoothTime: 0.1
   isJumpPressed: 0
-  initialJumpVelocity: 0.75
+  initialJumpVelocity: 0.9
   maxJumpHeight: 0.5
-  maxJumpTime: 1
+  maxJumpTime: 1.4
   isJumping: 0
   isReflecting: 0
   reflectDuration: 0.5

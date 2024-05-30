@@ -5,10 +5,18 @@ using UnityEngine;
 public class TerrainScript : MonoBehaviour
 {
     [SerializeField] float unjumpableTime;
+    Collider col;
+    MeshRenderer render;
 
     [Header("Materials")]
     [SerializeField] Material jumpableMat;
     [SerializeField] Material unjumpableMat;
+
+    private void Awake()
+    {
+        col = GetComponent<Collider>();
+        render = GetComponent<MeshRenderer>();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -17,7 +25,15 @@ public class TerrainScript : MonoBehaviour
         }
     }
 
-    IEnumerator TriggerUnjumpable() { 
-        yield return null;
+    public void SimulateProjectileHit() { 
+        StartCoroutine(TriggerUnjumpable());
+    }
+
+    IEnumerator TriggerUnjumpable() {
+        col.enabled = false;
+        render.material = unjumpableMat;
+        yield return new WaitForSeconds(unjumpableTime);
+        col.enabled = true;
+        render.material = jumpableMat;
     }
 }

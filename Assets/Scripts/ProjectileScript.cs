@@ -50,11 +50,21 @@ public class ProjectileScript : MonoBehaviour
             rb.excludeLayers = 0;
             reflected = true;
             Reflect();
-        } else
-        {
-            if (other.gameObject.layer == LayerMask.NameToLayer("Player")) other.gameObject.GetComponent<PlayerMovement>().TakeDamage();
-            if (other.gameObject.layer == LayerMask.NameToLayer("Boss")) other.gameObject.GetComponent<BossScript>().TakeDamage();
+        }
+        else if (other.gameObject.layer == LayerMask.NameToLayer("Player")) { 
+            other.gameObject.GetComponent<PlayerMovement>().TakeDamage();
+        }
+        else if (other.gameObject.layer == LayerMask.NameToLayer("Boss")) {
+            other.gameObject.GetComponent<BossScript>().TakeDamage();
             Destroy(gameObject);
         }
+        else if (other.gameObject.layer == LayerMask.NameToLayer("Plattform")) {
+            other.gameObject.GetComponent<TerrainScript>().SimulateProjectileHit();
+            Destroy(gameObject);
+        }
+        else { 
+            Destroy(gameObject);
+        }  
     }
 }
+

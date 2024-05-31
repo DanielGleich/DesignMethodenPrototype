@@ -14,7 +14,8 @@ public class MovementScript : MonoBehaviour
 {
     [SerializeField] List<MovePoint> movePoints;
     [SerializeField] int movingToPointNo = 0;
-    bool isMoving = false;
+    [SerializeField] float arrivedAccuracy;
+    [SerializeField] bool isMoving = false;
     Vector3 moveProgression;
     // Start is called before the first frame update
     void Start()
@@ -31,7 +32,14 @@ public class MovementScript : MonoBehaviour
         }
 
         transform.position = movePoints[0].position;
-        movingToPointNo = (movingToPointNo+1 == movePoints.Count ? 0 : movingToPointNo++);
+        if (movingToPointNo + 1 == movePoints.Count)
+        {
+            movingToPointNo = 0;
+        }
+        else
+        {
+            movingToPointNo++;
+        }
         isMoving = true;
     }
 
@@ -40,9 +48,9 @@ public class MovementScript : MonoBehaviour
     {
         if (isMoving) { 
             transform.position = Vector3.SmoothDamp(transform.position, movePoints[movingToPointNo].position, ref moveProgression, movePoints[movingToPointNo].moveTime);
-            if (transform.position == movePoints[movingToPointNo].position )
+            if (Vector3.Distance(transform.position, movePoints[movingToPointNo].position) <= arrivedAccuracy)
             {
-                StartCoroutine(waitForNextPoint());
+                StartCoroutine(WaitForNextPoint());
             }
         }
 
@@ -54,10 +62,17 @@ public class MovementScript : MonoBehaviour
         StartMove();
     }
 
-    IEnumerator waitForNextPoint() {
+    IEnumerator WaitForNextPoint() {
         isMoving = false;
+        Debug.Log(movingToPointNo + 1 == movePoints.Count);
         yield return new WaitForSeconds(movePoints[movingToPointNo].waitTime);
-        movingToPointNo = (movingToPointNo + 1 == movePoints.Count ? 0 : movingToPointNo++);
+        if (movingToPointNo+ 1 == movePoints.Count)
+        {
+            movingToPointNo = 0;
+        }
+        else { 
+            movingToPointNo++;
+        }
         isMoving = true;
     }
 }

@@ -128,11 +128,7 @@ public class PlayerMovement : MonoBehaviour
     {
         hp--;
         if (hp == 0) {
-            CheckpointState.playerHp = 3;
-            gameOverUI.SetActive(true);
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-            gameObject.SetActive(false);
+            Die();
         } 
         else playerObj.GetComponent<MeshRenderer>().material = hpMaterials[hp];
     }
@@ -167,5 +163,14 @@ public class PlayerMovement : MonoBehaviour
 
     public void SaveHP() {
         CheckpointState.playerHp = hp;
+    }
+
+    public void Die()
+    {
+        CheckpointState.playerHp = 3;
+        gameOverUI.SetActive(true);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        gameObject.SetActive(false);
     }
 }

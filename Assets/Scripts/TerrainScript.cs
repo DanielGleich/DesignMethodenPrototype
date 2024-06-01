@@ -5,6 +5,8 @@ using UnityEngine;
 public class TerrainScript : MonoBehaviour
 {
     [SerializeField] float unjumpableTime;
+    [SerializeField] bool customShaderGraph = false;
+    [SerializeField] float customShaderAlpha;
     Collider col;
     MeshRenderer render;
 
@@ -16,6 +18,7 @@ public class TerrainScript : MonoBehaviour
     {
         col = GetComponent<Collider>();
         render = GetComponent<MeshRenderer>();
+        jumpableMat.SetFloat("_Alpha", 1);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -31,9 +34,22 @@ public class TerrainScript : MonoBehaviour
 
     IEnumerator TriggerUnjumpable() {
         col.enabled = false;
-        render.material = unjumpableMat;
+        if (customShaderGraph)
+        {
+            jumpableMat.SetFloat("_Alpha", customShaderAlpha);
+        }
+        else { 
+            render.material = unjumpableMat;
+        }
         yield return new WaitForSeconds(unjumpableTime);
         col.enabled = true;
-        render.material = jumpableMat;
+        if (customShaderGraph)
+        {
+            jumpableMat.SetFloat("_Alpha", 1);
+        }
+        else
+        {
+            render.material = jumpableMat;
+        }
     }
 }

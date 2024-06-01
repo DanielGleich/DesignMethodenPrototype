@@ -56,6 +56,7 @@ public class PlayerMovement : MonoBehaviour
         cam = Camera.main.transform;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        cc.providesContacts = true;
         SetupJumpVariables();
     }
 

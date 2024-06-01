@@ -64,7 +64,6 @@ public class MovementScript : MonoBehaviour
 
     IEnumerator WaitForNextPoint() {
         isMoving = false;
-        Debug.Log(movingToPointNo + 1 == movePoints.Count);
         yield return new WaitForSeconds(movePoints[movingToPointNo].waitTime);
         if (movingToPointNo+ 1 == movePoints.Count)
         {

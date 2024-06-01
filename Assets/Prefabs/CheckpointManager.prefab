@@ -45,16 +45,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   checkPoints:
-  - hpCount: 3
-    PlayerSpawnPoint: {fileID: 0}
-    BossSpawnPoint: {fileID: 0}
-  - hpCount: 2
-    PlayerSpawnPoint: {fileID: 0}
-    BossSpawnPoint: {fileID: 0}
-  - hpCount: 1
-    PlayerSpawnPoint: {fileID: 0}
-    BossSpawnPoint: {fileID: 0}
-  currentState:
-    hpCount: 0
-    PlayerSpawnPoint: {fileID: 0}
-    BossSpawnPoint: {fileID: 0}
+  - sceneName: Jumpnrun 3HP
+    bossHpCount: 3
+    bossShootDelay: 3
+    bossShootCooldown: 0.2
+  - sceneName: Jumpnrun 2HP
+    bossHpCount: 2
+    bossShootDelay: 2
+    bossShootCooldown: 0.1
+  - sceneName: Jumpnrun 1HP
+    bossHpCount: 1
+    bossShootDelay: 1
+    bossShootCooldown: 0.05
+  cutsceneTime: 5

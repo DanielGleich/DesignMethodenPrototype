@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform cam;
     [SerializeField] Transform playerObj;
     [SerializeField] GameObject reflector;
+    [SerializeField] GameObject gameOverUI;
     CharacterController cc;
 
     [Header("Health")]
@@ -44,9 +45,7 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator LoadCheckState() {
         yield return null;
-        CheckPoint cp = GameObject.FindGameObjectWithTag("CheckpointManager").GetComponent<CheckpointManager>().currentState;
-        transform.position = cp.PlayerSpawnPoint.position;
-        transform.eulerAngles = cp.PlayerSpawnPoint.eulerAngles;
+        hp = CheckpointState.playerHp;
     }
 
     void Start()
@@ -128,7 +127,13 @@ public class PlayerMovement : MonoBehaviour
     public void TakeDamage()
     {
         hp--;
-        if (hp == 0) gameObject.SetActive(false);
+        if (hp == 0) {
+            CheckpointState.playerHp = 3;
+            gameOverUI.SetActive(true);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            gameObject.SetActive(false);
+        } 
         else playerObj.GetComponent<MeshRenderer>().material = hpMaterials[hp];
     }
 
@@ -158,5 +163,9 @@ public class PlayerMovement : MonoBehaviour
         reflector.SetActive(false);
         yield return new WaitForSeconds(reflectCooldown);
         isReflecting = false;
+    }
+
+    public void SaveHP() {
+        CheckpointState.playerHp = hp;
     }
 }

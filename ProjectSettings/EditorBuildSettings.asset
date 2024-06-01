@@ -4,5 +4,20 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Prototype.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/Jumpnrun 3HP.unity
+    guid: 745d0700342d0204284408c946ad0b85
+  - enabled: 1
+    path: Assets/Scenes/Jumpnrun 2HP.unity
+    guid: c097a71ee573e4f44b96f32ed95249a9
+  - enabled: 1
+    path: Assets/Scenes/Jumpnrun 1HP.unity
+    guid: 4d2fd5901f9e8ae418ce6d3a431ba18d
+  - enabled: 1
+    path: Assets/Scenes/DevTest.unity
+    guid: a750ff017100bcc4eb44e4b6ad4f5384
   m_configObjects: {}

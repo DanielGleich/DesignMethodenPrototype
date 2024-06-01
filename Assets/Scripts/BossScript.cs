@@ -22,10 +22,10 @@ public class BossScript : MonoBehaviour
 
     void LoadCheckState()
     {
-        CheckPoint cp = GameObject.FindGameObjectWithTag("CheckpointManager").GetComponent<CheckpointManager>().currentState;
-        gameObject.transform.position = cp.BossSpawnPoint.position;
-        gameObject.transform.eulerAngles = cp.BossSpawnPoint.eulerAngles;
-        hp = cp.hpCount;
+        hp = CheckpointState.currentCheckPoint.bossHpCount;
+        shootCooldown = CheckpointState.currentCheckPoint.bossShootCooldown;
+        shootDelay = CheckpointState.currentCheckPoint.bossShootDelay;
+
         if (hp == 1) reflectors.SetActive(true);
         else reflectors.SetActive(false);
         GetComponent<MeshRenderer>().material = damageMaterials[hp];
@@ -52,12 +52,16 @@ public class BossScript : MonoBehaviour
 
     public void TakeDamage()
     {
-        hp--;
-        CheckpointState.bossHp = hp;
+        hp--; 
         if (hp == 1) reflectors.SetActive(true);
-        if (hp == 0) Destroy(gameObject); else { 
+        if (hp == 0) Destroy(gameObject);
+        else
+        {
             GetComponent<MeshRenderer>().material = damageMaterials[hp];
         }
+        GameObject.FindGameObjectWithTag("CheckpointManager").GetComponent<CheckpointManager>().SetCheckPoint(hp);
+        GameObject.FindGameObjectWithTag("CheckpointManager").GetComponent<CheckpointManager>().StartCutscene();
+
     }
 
     IEnumerator ShootBullet()

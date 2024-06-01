@@ -4,5 +4,6 @@ using UnityEngine;
 
 public class CheckpointState : MonoBehaviour
 {
-    public static int bossHp = 3;
+    public static CheckPoint currentCheckPoint;
+    public static int playerHp;
 }

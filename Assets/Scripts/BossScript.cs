@@ -61,7 +61,7 @@ public class BossScript : MonoBehaviour
         }
         GameObject.FindGameObjectWithTag("CheckpointManager").GetComponent<CheckpointManager>().SetCheckPoint(hp);
         GameObject.FindGameObjectWithTag("CheckpointManager").GetComponent<CheckpointManager>().StartCutscene();
-
+        gameObject.SetActive(false);
     }
 
     IEnumerator ShootBullet()

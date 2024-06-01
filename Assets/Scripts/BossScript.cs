@@ -17,6 +17,7 @@ public class BossScript : MonoBehaviour
 
     [Header("Sonstiges")]
     [SerializeField] List<Material> damageMaterials;
+    [SerializeField] GameObject reflectors;
     GameObject player;
 
     void LoadCheckState()
@@ -25,6 +26,8 @@ public class BossScript : MonoBehaviour
         gameObject.transform.position = cp.BossSpawnPoint.position;
         gameObject.transform.eulerAngles = cp.BossSpawnPoint.eulerAngles;
         hp = cp.hpCount;
+        if (hp == 1) reflectors.SetActive(true);
+        else reflectors.SetActive(false);
         GetComponent<MeshRenderer>().material = damageMaterials[hp];
     }
 
@@ -36,6 +39,7 @@ public class BossScript : MonoBehaviour
     private void Start()
     {
         LoadCheckState();
+        if (hp > 1) reflectors.SetActive(false);
     }
 
     void Update()
@@ -50,6 +54,7 @@ public class BossScript : MonoBehaviour
     {
         hp--;
         CheckpointState.bossHp = hp;
+        if (hp == 1) reflectors.SetActive(true);
         if (hp == 0) Destroy(gameObject); else { 
             GetComponent<MeshRenderer>().material = damageMaterials[hp];
         }

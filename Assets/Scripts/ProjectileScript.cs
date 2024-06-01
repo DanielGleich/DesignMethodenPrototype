@@ -36,13 +36,16 @@ public class ProjectileScript : MonoBehaviour
 
     public void Reflect() {
         Vector3 dir = GameObject.FindGameObjectWithTag("Player").transform.forward;
-        dir = dir * Camera.main.transform.eulerAngles.x;
-        dir = dir * Camera.main.transform.eulerAngles.y;
+        //dir = dir * Camera.main.transform.eulerAngles.x;
+        //dir = dir * Camera.main.transform.eulerAngles.y;
         transform.LookAt(dir);
+        transform.eulerAngles = new Vector3(Camera.main.transform.eulerAngles.x, Camera.main.transform.eulerAngles.y, transform.eulerAngles.z);
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.gameObject.name);
+        if (reflected && other.gameObject.layer == LayerMask.NameToLayer("BossReflector")) Destroy(gameObject);
         if (reflected && other.gameObject.layer != LayerMask.NameToLayer("Boss")) return;
 
         if (other.gameObject.layer == LayerMask.NameToLayer("Reflector"))
@@ -51,7 +54,7 @@ public class ProjectileScript : MonoBehaviour
             reflected = true;
             Reflect();
         }
-        else if (other.gameObject.layer == LayerMask.NameToLayer("Player")) { 
+        else if (other.gameObject.tag == "Player") { 
             other.gameObject.GetComponent<PlayerMovement>().TakeDamage();
         }
         else if (other.gameObject.layer == LayerMask.NameToLayer("Boss")) {
